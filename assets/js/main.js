@@ -247,15 +247,32 @@
 })();
 
 $(document).ready(function () {
+
+  $.validator.addMethod(
+    "customMinlength",
+    function (value,element, param) {
+      let valueWithoutSpaces = value.replace(/\s/g, ""); 
+      return valueWithoutSpaces.length >= param;
+    },
+);
+$.validator.addMethod(
+  "lettersOnly",
+  function (value) {
+      return /^[a-zA-Z ]*$/.test(value);
+  }
+);
+
   $("#form").validate({
     rules: {
       name: {
-        minlength: 3,
         required: true,
+        lettersOnly: true,
+        customMinlength: 3,
       },
       email: {
         email: true,
         required: true,
+        customMinlength: 5,
       },
       subject: {
         required: true,
@@ -266,32 +283,32 @@ $(document).ready(function () {
     },
     messages: {
       name: {
-        minlength: "Name must be at least {0} characters long",
-        required: "Name is required",
+        required: "Name is required!",
+        lettersOnly: "Please enter letters only!",
+        customMinlength: "Name must be at least {0} characters long!",
       },
       email: {
-        email: "Invalid email format",
-        required: "Email is required",
+        email: "Invalid email format!",
+        required: "Email is required!",
       },
       subject: {
-        required: "Subject is required",
+        required: "Subject is required!",
       },
       message: {
-        required: "Message is required",
+        required: "Message is required!",
       },
     },
     errorPlacement: function (error, element) {
-      var name = $(element).attr("name");
+      let name = $(element).attr("name");
       $(`#${name}_validate`).html(
         `<i class="bi bi-exclamation-circle"></i> ${error.text()}`
       );
     },
   });
-
   $("#form input, #form textarea").on("input", function () {
     if ($(this).valid()) {
-      var name = $(this).attr("name");
-      var errorSpan = $(`#${name}_validate`);
+      let name = $(this).attr("name");
+      let errorSpan = $(`#${name}_validate`);
       errorSpan.html(``);
     }
   });
